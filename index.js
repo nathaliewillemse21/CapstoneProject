@@ -1,5 +1,7 @@
 console.log("Annyeonghaseyo");
 import cookieParser from 'cookie-parser';
+import { userRouter } from './controller/UsersController.js';
+import { productsRouter } from './controller/ProductsController.js';
 import { errorHandling } from './middleware/ErrorHandling.js';
 import path from 'path';
 import cors from 'cors';
@@ -30,6 +32,8 @@ app.use(
 app.get('^/$|/capstoneproject', (req, res) => {
   res.status(200).sendFile(path.join(__dirname, './static/index.html'));
 });
+app.use('/Users', userRouter);
+app.use('/Library', productsRouter);
 app.use(errorHandling);
 app.listen(port, () => {
   console.log(`This server is running on port number ${port}`);
