@@ -1,0 +1,17 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+h2 {
+  margin: 1rem;
+}
+table,
+th,
+td {
+  border-style: solid;
+  margin: auto;
+  padding: 0.5rem;
+}
