@@ -3,7 +3,7 @@ import bodyParser from 'body-parser';
 import { users } from '../model/index.js';
 import { verifyToken } from '../middleware/AuthenticateUser.js';
 const userRouter = express.Router();
-// fetch users
+
 userRouter.get('/', (req, res) => {
   try {
     users.fetchUsers(req, res);
@@ -14,7 +14,6 @@ userRouter.get('/', (req, res) => {
     });
   }
 });
-//Fetch user
 
 userRouter.get('/:id', (req, res) => {
   try {
@@ -26,7 +25,7 @@ userRouter.get('/:id', (req, res) => {
     });
   }
 });
-//Add a user
+
 userRouter.post('/register', bodyParser.json(), (req, res) => {
   try {
     users.addUser(req, res);
@@ -38,7 +37,7 @@ userRouter.post('/register', bodyParser.json(), (req, res) => {
   }
 });
 
-// Delete a user
+
 userRouter.delete('/delete/:id', bodyParser.json(), (req, res) => {
   try {
     users.deleteUser(req, res);
@@ -49,7 +48,7 @@ userRouter.delete('/delete/:id', bodyParser.json(), (req, res) => {
     });
   }
 });
-// Update a user
+
 
 userRouter.patch('/update/:id', bodyParser.json(), (req, res) => {
   try {
@@ -62,16 +61,15 @@ userRouter.patch('/update/:id', bodyParser.json(), (req, res) => {
   }
 });
 
-// Log user in
 
-// userRouter.post('/login', bodyParser.json(), (req, res) => {
-//   try {
-//     users.login(req, res);
-//   } catch (e) {
-//     res.json({
-//       status: res.statusCode,
-//       msg: 'Failed to log in',
-//     });
-//   }
-// });
+userRouter.post('/login', bodyParser.json(), async(req, res) => {
+  try {
+    users.login(req, res);
+  } catch (e) {
+    res.json({
+      status: res.statusCode,
+      msg: 'Failed to log in',
+    });
+  }
+});
 export { userRouter, express };

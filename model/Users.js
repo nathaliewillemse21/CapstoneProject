@@ -1,4 +1,9 @@
 import { connection as db } from '../config/index.js';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
+import bodyParser from 'body-parser';
+import { createToken } from '../middleware/AuthenticateUser.js';
+
 class Users {
   fetchUsers(req, res) {
     const qry = `
@@ -85,45 +90,42 @@ class Users {
       });
     });
   }
+
+  async login(req, res) {
+    const { emailAdd, userPass } = req.body;
+    const qry = `
+      SELECT UserID, FirstName, LastName, Email, Gender, Age
+      FROM Users
+      WHERE emailAdd = ?`;
+    db.query(qry, [emailAdd], async (err, result) => {
+      if (err) throw err;
+      if (!result?.length) {
+        res.json({
+          status: res.statucCode,
+          msg: 'You provided the wrong email address',
+        });
+      } else {
+        const validPass = await result(userPass, result[0].userPass);
+        if (validPass) {
+          const token = createToken({
+            emailAdd,
+            userPass,
+          });
+          res.json({
+            status: res.statusCode,
+            msg: 'You are logged in',
+            token,
+            result: result[0],
+          });
+        } else {
+          res.json({
+            status: res.statusCode,
+            msg: 'Please provide the correct password',
+          });
+        }
+      }
+    });
+  }
 }
-
-//   async login(req, res) {
-//     const { emailAdd, userPass } = req.body;
-//     const qry = `
-//   SELECT UserID, FirstName, LastName, Email, Gender, Age, userPass
-//   FROM Users
-//   WHERE emailAdd = ?`;
-
-
-//     db.query(qry, [emailAdd], async (err, result) => {
-//       if (err) throw err;
-//       if (!result?.length) {
-//         res.json({
-//           status: res.statusCode,
-//           msg: 'You provided a wrong email address',
-//         });
-//       } else {
-//         // Validate password 
-//         const validPass = await compare(userPass, result[0].userPass);
-//         if (validPass) {
-//           const token = createToken({
-//             emailAdd,
-//             userPass,
-//           });
-//           res.json({
-//             status: res.statusCode,
-//             msg: 'You are logged in',
-//             token,
-//             result: result[0],
-//           });
-//         } else {
-//           res.json({
-//             status: res.statusCode,
-//             msg: 'Please provide the correct Password',
-//           });
-//         }
-//       }
-//     });
-// }
 
 export { Users };
