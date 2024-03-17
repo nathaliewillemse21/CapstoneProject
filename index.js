@@ -1,4 +1,5 @@
 import cookieParser from 'cookie-parser';
+import { userRouter } from './controller/UsersController.js';
 import { productsRouter } from './controller/ProductsController.js';
 import { errorHandling } from './middleware/ErrorHandling.js';
 import path from 'path';
@@ -33,19 +34,11 @@ app.use(
 
 // Routes
 app.get('^/$|/capstoneproject', (req, res) => {
-  // Add your logic here if needed
-});
-
-app.get('/Users', (req, res) => {
   res.status(200).sendFile(path.join(__dirname, './static/index.html'));
 });
-
-app.use('/Library', productsRouter);
-
-// Error handling middleware
+app.use('/users', userRouter);
+app.use('/products', productsRouter);
 app.use(errorHandling);
-
-// Start the server
 app.listen(port, () => {
-  console.log(`This server is running on port number ${port}`);
+  console.log(`Server is running on port ${port}`);
 });
