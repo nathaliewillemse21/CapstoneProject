@@ -1,11 +1,14 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import {books } from '../model/index.js';
+import { Products } from '../model/index.js';
+
 const productsRouter = express.Router();
+
+const productsInstance = new Products(); // Create an instance of Products
 
 productsRouter.get('/', (req, res) => {
   try {
-    books.fetchBooks(req, res);
+    productsInstance.fetchProducts(req, res); // Call fetchProducts on the instance
   } catch (e) {
     res.json({
       status: res.statusCode,
@@ -13,47 +16,49 @@ productsRouter.get('/', (req, res) => {
     });
   }
 });
+
 productsRouter.get('/:id', (req, res) => {
   try {
-    0;
-    books.fetchBook(req, res);
+    productsInstance.fetchProduct(req, res); // Call fetchProduct on the instance
   } catch (e) {
     res.json({
       status: res.statusCode,
-      msg: 'Failed to retrieve a book',
+      msg: 'Failed to retrieve a product',
     });
   }
 });
-productsRouter.post('/addBook', bodyParser.json(), (req, res) => {
+
+productsRouter.post('/addProduct', bodyParser.json(), (req, res) => {
   try {
-    books.addBook(req, res);
+    productsInstance.addProduct(req, res); // Call addProduct on the instance
   } catch (e) {
     res.json({
       status: res.statusCode,
-      msg: 'Failed to add new book',
+      msg: 'Failed to add new product',
     });
   }
 });
 
 productsRouter.delete('/delete/:id', bodyParser.json(), (req, res) => {
   try {
-    books.deleteBook(req, res);
+    productsInstance.deleteProduct(req, res); // Call deleteProduct on the instance
   } catch (e) {
     res.json({
       status: res.statusCode,
-      msg: 'Failed to delete a book.',
-    });
-  }
-});
-productsRouter.patch('/update/:id', bodyParser.json(), (req, res) => {
-  try {
-    books.updateBook(req, res);
-  } catch (e) {
-    res.json({
-      status: res.statusCode,
-      msg: 'Failed to update a book',
+      msg: 'Failed to delete a product.',
     });
   }
 });
 
-export { productsRouter };
+productsRouter.patch('/update/:id', bodyParser.json(), (req, res) => {
+  try {
+    productsInstance.updateProduct(req, res); // Call updateProduct on the instance
+  } catch (e) {
+    res.json({
+      status: res.statusCode,
+      msg: 'Failed to update a product',
+    });
+  }
+});
+
+export { productsRouter, Products };

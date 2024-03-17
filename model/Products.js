@@ -1,6 +1,6 @@
 import { connection as db } from '../config/index.js';
-class Library {
-  fetchBooks(req, res) {
+class Products {
+  fetchProducts(req, res) {
     const qry = `
         SELECT BookID, Title, Category, Tags, Summary, Cover, UserID
         FROM Library;
@@ -12,8 +12,8 @@ class Library {
         results,
       });
     });
-    }
-  fetchBook(req, res) {
+  }
+  fetchProduct(req, res) {
     const qry = `
         SELECT BookID, Title, Category, Tags, Summary, Cover, UserID
         FROM Library
@@ -27,26 +27,26 @@ class Library {
       });
     });
   }
-  addBook(req, res) {
+  addProduct(req, res) {
     const qry = `
-        INSERT INTO Library
-        SET ?;`;
+    INSERT INTO Library
+    SET ?`;
+
     db.query(qry, [req.body], (err) => {
-      if (err) throw err;
-      res.json({
+      if (err) {
+        console.error(err);
+        return res.status(500).json({
+          error: 'Internal Server Error',
+        });
+      }
+      res.status(201).json({
         status: res.statusCode,
-        msg: 'New book added',
-      });
-    });
-    db.query(qry, (err) => {
-      if (err) throw err;
-      res.json({
-        status: res.statusCode,
-        msg: 'New Book added',
+        msg: 'New product added',
       });
     });
   }
-  deleteBook(req, res) {
+
+  deleteProduct(req, res) {
     const BookID = req.params.id;
     if (!BookID) {
       return res.status(400).json({ msg: 'Book ID is required' });
@@ -59,15 +59,15 @@ class Library {
     db.query(qry, [BookID], (err) => {
       if (err) {
         console.error('Error deleting book:', err);
-          return res.status(500).json({ msg: 'Failed to delete book ' });
+        return res.status(500).json({ msg: 'Failed to delete book' });
       }
       res.json({
         status: res.statusCode,
-        msg: 'Book removed',
+        msg: 'Book deleted',
       });
     });
   }
-  updateBook(req, res) {
+  updateProduct(req, res) {
     const qry = `
         UPDATE Library
         SET ?
@@ -76,13 +76,13 @@ class Library {
     db.query(qry, [req.body], (err) => {
       if (err) {
         console.error('Error updating:', err);
-        return res.status(500).json({ msg: 'Failed to update book' });
+        return res.status(500).json({ msg: 'Failed to update Book ' });
       }
       res.json({
         status: res.statusCode,
-        msg: 'Book was updated',
+        msg: 'Book  updated',
       });
     });
   }
 }
-export { Library }
+export { Products };

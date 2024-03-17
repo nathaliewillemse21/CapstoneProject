@@ -1,75 +1,137 @@
-import express from 'express';
-import bodyParser from 'body-parser';
-import { users } from '../model/index.js';
-import { verifyToken } from '../middleware/AuthenticateUser.js';
-const userRouter = express.Router();
+import { connection as db } from '../config/index.js';
+import { hash, compare } from 'bcrypt';
+import { createToken } from '../middleware/AuthenticateUser.js';
 
-userRouter.get('/', (req, res) => {
-  try {
-    users.fetchUsers(req, res);
-  } catch (e) {
-    res.json({
-      status: res.statusCode,
-      msg: 'Failed to retrieve user',
+class Users {
+  fetchUsers(req, res) {
+    const qry = `
+          SELECT userID, firstName, lastName, UserAge, gender, userRole, userPass, userProfile
+         FROM Users`;
+
+    db.query(qry, (err, results) => {
+      if (err) throw err;
+      res.json({
+        status: res.statusCode,
+        results,
+      });
     });
   }
-});
-
-userRouter.get('/:id', (req, res) => {
-  try {
-    users.fetchUser(req, res);
-  } catch (e) {
-    res.json({
-      status: res.statusCode,
-      msg: 'Failed to retrieve a user',
+  fetchUser(req, res) {
+    const qry = `
+        SELECT UserID, FirstName, LastName, Email,Gender, Age
+        FROM Users
+        WHERE userID = ${req.params.id} `;
+ 
+    db.query(qry, (err, result) => {
+      if (err) throw err;
+      res.json({
+        status: res.statusCode,
+        result: result[0],
+      });
     });
   }
-});
 
-userRouter.post('/register', bodyParser.json(), (req, res) => {
-  try {
-    users.addUser(req, res);
-  } catch (e) {
-    res.json({
-      status: res.statusCode,
-      msg: 'failed to create user',
+  async createUser(req, res) {
+    // Payload
+    let data = req.body;
+    data.userPass = await hash(data?.userPass, 10);
+    let user = {
+      emailAdd: data.emailAdd,
+      userPass: data.userPass,
+    };
+    const qry = `
+        INSERT INTO Users
+        SET ?;`;
+
+    db.query(qry, [data], (err) => {
+      if (err) {
+        console.log(err);
+        res.json({
+          status: res.statusCode,
+          msg: 'Please use another email address',
+        });
+      } else {
+        let token = createToken(user);
+        res.json({
+          status: res.statusCode,
+          token,
+          msg: 'You are registered',
+        });
+      }
     });
   }
-});
 
+  async updateUser(req, res) {
+    const data = req.body;
+    if (data?.userPwd) {
+      data.userPwd = await hash(data.userPwd, 8);
+    }
 
-userRouter.delete('/delete/:id', bodyParser.json(), (req, res) => {
-  try {
-    users.deleteUser(req, res);
-  } catch (e) {
-    res.json({
-      status: res.statusCode,
-      msg: 'Failed to delete a user.',
+    const qry = `
+      UPDATE Users
+      SET ?
+      WHERE userID = ?`;
+
+    db.query(qry, [data, req.params.id], (err) => {
+      if (err) throw err;
+      res.json({
+        status: res.statusCode,
+        msg: 'The user information is updated',
+      });
     });
   }
-});
 
+  async deleteUser(req, res) {
+    const qry = `
+      DELETE FROM Users
+      WHERE userID = ?`;
 
-userRouter.patch('/update/:id', bodyParser.json(), (req, res) => {
-  try {
-    users.updateUser(req, res);
-  } catch (e) {
-    res.json({
-      status: res.statusCode,
-      msg: 'Failed to update a user',
+    db.query(qry, [req.params.id], (err) => {
+      if (err) throw err;
+      res.json({
+        status: res.statusCode,
+        msg: 'User has been deleted',
+      });
     });
   }
-});
 
+  async login(req, res) {
+    const { emailAdd, userPass } = req.body;
+    const qry = `
+      SELECT userID, firstName, lastName, UserAge, gender, userRole, userPass, userProfile
+        FROM Users
+      WHERE emailAdd = ?`;
 
-userRouter.post('/login', bodyParser.json(), async(req, res) => {
-  try {
-    users.login(req, res);
-  } catch (e) {
-    res.json({
-      status: res.statusCode,
-      msg: 'Failed to log in',
+    db.query(qry, [emailAdd], async (err, result) => {
+      if (err) throw err;
+      if (!result?.length) {
+        res.json({
+          status: res.statusCode,
+          msg: 'You provided a wrong email address',
+        });
+      } else {
+        // Validate password
+        const validPass = await compare(userPass, result[0].userPass);
+        if (validPass) {
+          const token = createToken({
+            emailAdd,
+            userPass,
+          });
+          res.json({
+            status: res.statusCode,
+            msg: 'You are logged in',
+            token,
+            result: result[0],
+          });
+        } else {
+          res.json({
+            status: res.statusCode,
+            msg: 'Please provide the correct Password',
+          });
+        }
+      }
     });
-  }
-});
-export { userRouter, express };
+}
+}
+
+export { Users };

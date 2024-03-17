@@ -1,11 +1,11 @@
 console.log('Annyeonghaseyo');
 import { Users } from './Users.js';
 
-import { Library } from './Products.js';
+import { Products } from './Products.js';
 
 let users = new Users();
-let books = new Library();
-export { users, books };
+let books = new Products();
+export { Users, Products };
 
 
 
