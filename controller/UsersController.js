@@ -5,25 +5,31 @@ import { createToken } from '../middleware/AuthenticateUser.js';
 class Users {
   fetchUsers(req, res) {
     const qry = `
-          SELECT userID, firstName, lastName, UserAge, gender, userRole, userPass, userProfile
-         FROM Users`;
-
+      SELECT UserID, FirstName, LastName, Email, Gender, Age
+      FROM Users`;
     db.query(qry, (err, results) => {
-      if (err) throw err;
+      if (err) {
+        console.error('Error fetching users:', err);
+        return res.status(500).json({ error: 'Failed to fetch users' });
+      }
       res.json({
         status: res.statusCode,
         results,
       });
     });
   }
+
   fetchUser(req, res) {
+    const userId = req.params.id;
     const qry = `
-        SELECT UserID, FirstName, LastName, Email,Gender, Age
-        FROM Users
-        WHERE userID = ${req.params.id} `;
- 
-    db.query(qry, (err, result) => {
-      if (err) throw err;
+      SELECT UserID, FirstName, LastName, Email, Gender, Age
+      FROM Users
+      WHERE UserID = ?`;
+    db.query(qry, [userId], (err, result) => {
+      if (err) {
+        console.error('Error fetching user:', err);
+        return res.status(500).json({ error: 'Failed to fetch user' });
+      }
       res.json({
         status: res.statusCode,
         result: result[0],
@@ -32,65 +38,61 @@ class Users {
   }
 
   async createUser(req, res) {
-    // Payload
-    let data = req.body;
-    data.userPass = await hash(data?.userPass, 10);
-    let user = {
-      emailAdd: data.emailAdd,
-      userPass: data.userPass,
-    };
+    let userData = req.body;
+    userData.userPass = await hash(userData.userPass, 10);
     const qry = `
-        INSERT INTO Users
-        SET ?;`;
-
-    db.query(qry, [data], (err) => {
+      INSERT INTO Users
+      SET ?`;
+    db.query(qry, [userData], (err) => {
       if (err) {
-        console.log(err);
-        res.json({
-          status: res.statusCode,
-          msg: 'Please use another email address',
-        });
-      } else {
-        let token = createToken(user);
-        res.json({
-          status: res.statusCode,
-          token,
-          msg: 'You are registered',
-        });
+        console.error('Error creating user:', err);
+        return res.status(500).json({ error: 'Failed to create user' });
       }
+      let user = { emailAdd: userData.emailAdd };
+      let token = createToken(user);
+      res.json({
+        status: res.statusCode,
+        token,
+        msg: 'User registered successfully',
+      });
     });
   }
 
   async updateUser(req, res) {
-    const data = req.body;
-    if (data?.userPwd) {
-      data.userPwd = await hash(data.userPwd, 8);
+    const userId = req.params.id;
+    const userData = req.body;
+    if (userData.userPass) {
+      userData.userPass = await hash(userData.userPass, 8);
     }
-
     const qry = `
       UPDATE Users
       SET ?
-      WHERE userID = ?`;
-
-    db.query(qry, [data, req.params.id], (err) => {
-      if (err) throw err;
+      WHERE UserID = ?`;
+    db.query(qry, [userData, userId], (err) => {
+      if (err) {
+        console.error('Error updating user:', err);
+        return res.status(500).json({ error: 'Failed to update user' });
+      }
       res.json({
         status: res.statusCode,
-        msg: 'The user information is updated',
+        msg: 'User information updated successfully',
       });
     });
   }
 
   async deleteUser(req, res) {
+    const userId = req.params.id;
     const qry = `
       DELETE FROM Users
-      WHERE userID = ?`;
-
-    db.query(qry, [req.params.id], (err) => {
-      if (err) throw err;
+      WHERE UserID = ?`;
+    db.query(qry, [userId], (err) => {
+      if (err) {
+        console.error('Error deleting user:', err);
+        return res.status(500).json({ error: 'Failed to delete user' });
+      }
       res.json({
         status: res.statusCode,
-        msg: 'User has been deleted',
+        msg: 'User deleted successfully',
       });
     });
   }
@@ -98,40 +100,31 @@ class Users {
   async login(req, res) {
     const { emailAdd, userPass } = req.body;
     const qry = `
-      SELECT userID, firstName, lastName, UserAge, gender, userRole, userPass, userProfile
-        FROM Users
-      WHERE emailAdd = ?`;
-
+      SELECT UserID, FirstName, LastName, Email, Gender, Age, userPass
+      FROM Users
+      WHERE Email = ?`;
     db.query(qry, [emailAdd], async (err, result) => {
-      if (err) throw err;
-      if (!result?.length) {
-        res.json({
-          status: res.statusCode,
-          msg: 'You provided a wrong email address',
-        });
-      } else {
-        // Validate password
-        const validPass = await compare(userPass, result[0].userPass);
-        if (validPass) {
-          const token = createToken({
-            emailAdd,
-            userPass,
-          });
-          res.json({
-            status: res.statusCode,
-            msg: 'You are logged in',
-            token,
-            result: result[0],
-          });
-        } else {
-          res.json({
-            status: res.statusCode,
-            msg: 'Please provide the correct Password',
-          });
-        }
+      if (err) {
+        console.error('Error fetching user:', err);
+        return res.status(500).json({ error: 'Failed to fetch user' });
       }
+      if (!result || result.length === 0) {
+        return res.status(400).json({ error: 'Invalid email address' });
+      }
+      const match = await compare(userPass, result[0].userPass);
+      if (!match) {
+        return res.status(400).json({ error: 'Incorrect password' });
+      }
+      const user = { emailAdd };
+      const token = createToken(user);
+      res.json({
+        status: res.statusCode,
+        msg: 'You are logged in',
+        token,
+        result: result[0],
+      });
     });
-}
+  }
 }
 
-export { Users };
+export{Users}
