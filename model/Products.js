@@ -2,7 +2,7 @@ import { connection as db } from '../config/index.js';
 class Products {
   fetchProducts(req, res) {
     const qry = `
-        SELECT BookID, Title, Category, Tags, Summary, Cover, UserID
+        SELECT BookID, Title, Category, Tags, Summary, Cover, UserID, Price
         FROM Library;
         `;
     db.query(qry, (err, results) => {
@@ -15,7 +15,7 @@ class Products {
   }
   fetchProduct(req, res) {
     const qry = `
-        SELECT BookID, Title, Category, Tags, Summary, Cover, UserID
+        SELECT BookID, Title, Category, Tags, Summary, Cover, UserID, Price
         FROM Library
         WHERE BookID = ${req.params.id};
         `;
