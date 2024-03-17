@@ -1,25 +1,24 @@
 import express from 'express';
 import bodyParser from 'body-parser';
-import { Products, Users } from '../model/index.js';
-
+import { users } from '../model/index.js';
+import { verifyToken } from '../middleware/AuthenticateUser.js';
 const userRouter = express.Router();
-
-const userInstance = new Users(); // Create an instance of Products
-
+// fetch users
 userRouter.get('/', (req, res) => {
   try {
-    userInstance.fetchUsers(req, res); // Call fetchProducts on the instance
+    users.fetchUsers(req, res);
   } catch (e) {
     res.json({
       status: res.statusCode,
-      msg: 'Failed to retrieve products',
+      msg: 'Failed to retrieve user',
     });
   }
 });
+//Fetch user
 
 userRouter.get('/:id', (req, res) => {
   try {
-    userInstance.fetchUser(req, res); // Call fetchProduct on the instance
+    users.fetchUser(req, res);
   } catch (e) {
     res.json({
       status: res.statusCode,
@@ -27,21 +26,22 @@ userRouter.get('/:id', (req, res) => {
     });
   }
 });
-
+//Add a user
 userRouter.post('/register', bodyParser.json(), (req, res) => {
   try {
-    userInstance.addUser(req, res); // Call addProduct on the instance
+    users.createUser(req, res);
   } catch (e) {
     res.json({
       status: res.statusCode,
-      msg: 'Failed to add new user',
+      msg: 'failed to create user',
     });
   }
 });
 
+// Delete a user
 userRouter.delete('/delete/:id', bodyParser.json(), (req, res) => {
   try {
-    userInstance.deleteUser(req, res); // Call deleteProduct on the instance
+    users.deleteUser(req, res);
   } catch (e) {
     res.json({
       status: res.statusCode,
@@ -49,10 +49,11 @@ userRouter.delete('/delete/:id', bodyParser.json(), (req, res) => {
     });
   }
 });
+// Update a user
 
 userRouter.patch('/update/:id', bodyParser.json(), (req, res) => {
   try {
-    userInstance.updateUser(req, res); // Call updateProduct on the instance
+    users.updateUser(req, res);
   } catch (e) {
     res.json({
       status: res.statusCode,
@@ -61,4 +62,17 @@ userRouter.patch('/update/:id', bodyParser.json(), (req, res) => {
   }
 });
 
-export { Users };
+// Log user in
+
+userRouter.post('/login', bodyParser.json(), (req, res) => {
+  try {
+    users.login(req, res);
+  } catch (e) {
+    res.json({
+      status: res.statusCode,
+      msg: 'Failed to log in',
+    });
+  }
+});
+
+export { userRouter, express };

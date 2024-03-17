@@ -5,7 +5,7 @@ import { Products } from './Products.js';
 
 let users = new Users();
 let books = new Products();
-export { Users, Products };
+export { users, Products };
 
 
 
