@@ -29,7 +29,7 @@ class Products {
   }
   addProduct(req, res) {
     const qry = `
-    INSERT INTO Library
+    INSERT INTO Products
     SET ?`;
 
     db.query(qry, [req.body], (err) => {
@@ -41,7 +41,7 @@ class Products {
       }
       res.status(201).json({
         status: res.statusCode,
-        msg: 'New product added',
+        msg: 'New book added',
       });
     });
   }

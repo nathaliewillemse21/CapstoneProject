@@ -30,7 +30,7 @@ productsRouter.get('/:id', (req, res) => {
 
 productsRouter.post('/addProduct', bodyParser.json(), (req, res) => {
   try {
-    productsInstance.addProduct(req, res); 
+    productsInstance.addProduct(req, res);
   } catch (e) {
     res.json({
       status: res.statusCode,
@@ -38,7 +38,6 @@ productsRouter.post('/addProduct', bodyParser.json(), (req, res) => {
     });
   }
 });
-
 productsRouter.delete('/delete/:id', bodyParser.json(), (req, res) => {
   try {
     productsInstance.deleteProduct(req, res); 
