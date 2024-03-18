@@ -71,7 +71,7 @@ class Products {
     const qry = `
         UPDATE Library
         SET Title = ?, Category = ?, Tags = ?, Summary = ?, Cover = ?, Price = ?
-        WHERE id = ?;
+        WHERE id = NULL?;
     `;
     const { Title, Category, Tags, Summary, Cover, Price, id } = req.body;
     db.query(qry, [Title, Category, Tags, Summary, Cover, Price, id], (err) => {
