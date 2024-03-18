@@ -70,18 +70,18 @@ class Products {
   updateProduct(req, res) {
     const qry = `
         UPDATE Library
-        Title = ?, Category = ?, Tags = ?, Summary = ?, Cover = ?, Price = ?
-        SET ?
+        SET Title = ?, Category = ?, Tags = ?, Summary = ?, Cover = ?, Price = ?
         WHERE id = ?;
     `;
-    db.query(qry, [req.body], (err) => {
+    const { Title, Category, Tags, Summary, Cover, Price, id } = req.body;
+    db.query(qry, [Title, Category, Tags, Summary, Cover, Price, id], (err) => {
       if (err) {
         console.error('Error updating:', err);
-        return res.status(500).json({ msg: 'Failed to update Book ' });
+        return res.status(500).json({ msg: 'Failed to update Book' });
       }
       res.json({
         status: res.statusCode,
-        msg: 'Book  updated',
+        msg: 'Book updated',
       });
     });
   }
