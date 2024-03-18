@@ -70,6 +70,7 @@ class Products {
   updateProduct(req, res) {
     const qry = `
         UPDATE Library
+        Title = ?, Category = ?, Tags = ?, Summary = ?, Cover = ?, Price = ?
         SET ?
         WHERE id = ?;
     `;
