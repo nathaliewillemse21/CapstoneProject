@@ -29,7 +29,7 @@ class Products {
   }
   addProduct(req, res) {
     const qry = `
-    INSERT INTO Products
+    INSERT INTO Library
     SET ?`;
 
     db.query(qry, [req.body], (err) => {
