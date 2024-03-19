@@ -1,0 +1,22 @@
+*,
+*::before,
+*::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.body-background {
+  background-color: rgb(232, 225, 225);
+}
+#view {
+  margin: 5rem;
+  padding: 2rem;
+  display: flex;
+}
+@media screen and (width < 700px) {
+  .about-content {
+    overflow-y: scroll;
+    height: 40rem;
+    scroll-snap-type: y mandatory;
+  }
+}

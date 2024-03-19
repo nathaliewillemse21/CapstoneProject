@@ -1,30 +1,25 @@
 <template>
-  <nav>
-    <router-link to="/">Home</router-link> |
-    <router-link to="/about">About</router-link>
-  </nav>
-  <router-view/>
+  <NavBarView/>
+  <main class="container-fluid">
+    <router-view/> 
+  </main>
+  <div>
+    <router-link to="/login">Login</router-link>
+    <router-link to="/signup">Sign Up</router-link>
+  </div>
+  <FooterView/>
 </template>
 
-<style>
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-}
+<script>
 
-nav {
-  padding: 30px;
-}
+import NavBarView from './components/NavbarView.vue';
+import FooterView from './components/FooterView.vue';
 
-nav a {
-  font-weight: bold;
-  color: #2c3e50;
+export default {
+  components: {
+    NavBarView,
+    FooterView
+  }
 }
-
-nav a.router-link-exact-active {
-  color: #42b983;
-}
-</style>
+</script>
+<style src="@/assets/css/style.css"></style>
