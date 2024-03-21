@@ -1,7 +1,7 @@
 import { config } from 'dotenv';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcrypt';
-
+import  cors  from "cors";
 const { sign, verify } = jwt;
 config();
 
