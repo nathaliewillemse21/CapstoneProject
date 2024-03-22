@@ -1,5 +1,5 @@
 <template>
-  <div class="body-background">
+  <div>
       <div class="container">
         <div class="row g-0">
           <div class="image d-flex justify-content-center align-content-center">

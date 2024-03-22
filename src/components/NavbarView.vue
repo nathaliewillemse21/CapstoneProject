@@ -12,8 +12,8 @@
       >
         <span class="navbar-toggler-icon"></span>
       </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav">
+      <div class="collapse navbar-collapse flex-grow-1" id="navbarNav">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item">
             <router-link class="nav-link" to="/">Home</router-link>
           </li>
@@ -22,6 +22,9 @@
           </li>
           <li class="nav-item">
             <router-link class="nav-link" to="/library">Library</router-link>
+          </li>
+          <li class="nav-item">
+            <router-link class="nav-link" to="/admin">Admin</router-link>
           </li>
           <li class="nav-item">
             <router-link class="nav-link" to="/users">Users</router-link>
@@ -53,7 +56,7 @@ export default {
 .nav {
   position: fixed;
   bottom: 0;
-  width: auto;
+  width: 100%;
   color: #fff;
   padding: 20px;
   text-align: center;

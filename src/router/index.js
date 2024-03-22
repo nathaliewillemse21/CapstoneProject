@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
-import LoginView from '@/views/LoginView.vue';
+// import LoginView from '@/views/LoginView.vue';
 
 const routes = [
   {
@@ -9,7 +9,7 @@ const routes = [
   {
     path: '/login',
     name: 'login',
-    component: LoginView,
+    component: () => import('@/views/LoginView.vue'),
   },
   {
     path: '/home',
@@ -31,6 +31,12 @@ const routes = [
     path: '/checkout',
     name: 'checkout',
     component: () => import('@/views/CheckoutView.vue'),
+    meta: { requiresAuth: true },
+  },
+  {
+    path: '/admin',
+    name: 'admin',
+    component: () => import('@/views/AdminView.vue'),
     meta: { requiresAuth: true },
   },
   {

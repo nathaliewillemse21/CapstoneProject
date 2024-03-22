@@ -1,5 +1,6 @@
 <template>
-  <div class="body-background">
+  <div>
+    <div> <button @click="addUser">Add User</button></div>
     <table class="table">
       <thead>
         <tr>
@@ -11,7 +12,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="user in users" :key="user.id">
+        <tr v-for="user in users" :key="user.UserID">
           <td>{{ user.UserID }}</td>
           <td>{{ user.FirstName }}</td>
           <td>{{ user.LastName }}</td>
@@ -30,6 +31,18 @@ export default {
       return this.$store.state.users;
     },
   },
+  methods: {
+    addUser(){
+      const newUser = {
+        UserID: '',
+      FirstName: '',
+      LastName: '',
+      Age:'' ,
+      Gender:''
+      }
+      this.$store.dispatch('registerNewUser', newUser)
+    }
+  },
   mounted() {
     this.$store.dispatch('fetchUsers');
   },
@@ -37,9 +50,6 @@ export default {
 </script>
 
 <style scoped>
-.body-background {
-  background-color: rgb(232, 225, 225);
-}
 table {
   width: 100%;
   border-collapse: collapse;

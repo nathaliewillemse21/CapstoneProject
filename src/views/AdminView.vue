@@ -1,48 +1,40 @@
 <template>
-  <div class="body-background">
+  <div>
     <div>
       <input
         type="text"
         v-model="searchQuery"
         placeholder="Search products..."
       />
-    </div>
-    <div>
-      <label for="sortCategory">Sort by Category:</label>
-      <select id="sortCategory" @change="selectCategory">
-        <option value="default">Default</option>
-        <option value="Chinese manhua">Chinese manhua</option>
-        <option value="Japanese manga">Japanese manga</option>
-        <option value="Korean manhwa">Korean manhwa</option>
-      </select>
-      <div class="container">
-        <div class="row">
-          <div
-            class="col-md-6"
-            v-for="product in filteredProducts"
-            :key="product.BookID"
-          >
-            <div class="card mb-3">
-              <img
-                :src="product.Cover"
-                class="card-img-top"
-                alt="Product Image"
-              />
-              <div class="card-body">
-                <h2 class="card-title">{{ product.Title }}</h2>
-                <p class="card-text">Tags: {{ product.Tags }}</p>
-                <p class="card-text product-content">
-                  Summary: "{{ product.Summary }}"
-                </p>
-                <p class="card-text">Price: R{{ product.Price }}</p>
-                <div class="actions">
-                  <AddToCart :product="product" />
-        </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <div>
+        <button @click="addProduct" class="addProduct">Add Product</button>
       </div>
+    </div>
+
+    <div>
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Tags</th>
+            <th>Price</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="product in filteredProducts" :key="product.BookID">
+            <td>{{ product.Title }}</td>
+            <td>{{ product.Tags }}</td>
+            <td>R{{ product.Price }}</td>
+            <td>
+              <div class="actions m-2">
+                <button class="delete">Delete</button>
+                <button class="edit">Edit</button>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
       <div v-if="showModal" class="modal">
         <button @click="addProduct">Upload</button>
       </div>
@@ -51,12 +43,7 @@
 </template>
 
 <script>
-import AddToCart from '@/components/ShoppingCart.vue';
-
 export default {
-  components: {
-    AddToCart
-  },
   data() {
     return {
       showModal: false,
@@ -111,21 +98,26 @@ export default {
     },
   },
   methods: {
+      editProduct() { },
+    deleteProduct(product) {
+      // Implement logic to confirm with the user if they want to delete the product
+      const confirmDelete = confirm(`Are you sure you want to delete ${product.Title}?`);
+      if (confirmDelete) {
+        // Make an API call to delete the product
+        // Handle the API response accordingly
+      }
+    },
     showAddProductModal() {
       this.showModal = true;
+    },
+    closeModal() {
+      this.showModal = false;
     },
     handleFileChange(category, event) {
       this.file[category] = event.target.files[0];
     },
     selectCategory(event) {
       this.selectedCategory = event.target.value;
-    },
-    addToCart() {
-      this.$store.dispatch('addToCart', this.product)
-    },
-    addProductToCart(product) {
-      this.$store.dispatch('addToCart', product);
-      this.$store.dispatch('showNotification', 'Product added to cart');
     },
     addProduct() {
       const formData = new FormData();
@@ -134,6 +126,8 @@ export default {
           formData.append(category, this.file[category]);
         }
       }
+      console.log(formData); // Log the form data for debugging (optional)
+
       // Make an API call to add the product
       this.$axios
         .post('/addProduct', formData)
@@ -155,9 +149,6 @@ export default {
 </script>
 
 <style scoped>
-.body-background {
-  background-color: rgb(232, 225, 225);
-}
 .container {
   display: flex;
   justify-content: center;
@@ -166,26 +157,24 @@ export default {
   padding-bottom: 5rem;
 }
 
-.card {
-  background-color: rgb(232, 225, 225);
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 10px;
-  margin: 10px;
-}
-.card img {
-  max-width: 100%;
-  height: auto;
+table {
+  width: 70%;
+  border-collapse: collapse;
+  margin-top: 20px;
+  justify-content: center;
 }
 
+th,
+td {
+  border: 1px solid #ddd;
+  padding: 2px;
+  text-align: center;
+}
+
+th {
+  background-color: grey;
+}
 .actions {
   margin-top: 10px;
-}
-@media screen and (width > 500px) {
-  .product-content {
-    overflow-y: scroll;
-    height: 10rem;
-    scroll-snap-type: y mandatory;
-  }
 }
 </style>

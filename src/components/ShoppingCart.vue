@@ -13,6 +13,8 @@
 </template>
 
 <script>
+import axios from 'axios';
+
 export default {
   computed: {
     cart() {
@@ -33,11 +35,9 @@ export default {
       })
       .then(response => {
         console.log(response.data);
-        // Handle successful payment, update UI, etc.
       })
       .catch(error => {
         console.error('Payment failed:', error);
-        // Handle error
       });
     }
   }

@@ -1,9 +1,10 @@
-
 import { createStore } from 'vuex';
 import axios from 'axios';
 
 const render = 'https://capstoneproject-k8g5.onrender.com/';
+
 export default createStore({
+  namespaced: true,
   state: {
     users: null,
     user: null,
@@ -11,7 +12,6 @@ export default createStore({
     products: null,
     product: null,
   },
-  getters: {},
   mutations: {
     setUsers(state, users) {
       state.users = users;
@@ -32,54 +32,47 @@ export default createStore({
   actions: {
     async fetchUsers(context) {
       try {
-        const { results } = await (await axios.get(`${render}users`)).data;
-        context.commit('setUsers', results);
-      } catch (e) {
+        const { data } = await axios.get(`${render}users`);
+        context.commit('setUsers', data);
+      } catch (error) {
+        console.error(error);
         alert('Request Failed! Could not retrieve all users!');
       }
     },
     async fetchUser(context, id) {
       try {
-        const { result } = await (await axios.get(`${render}users/${id}`)).data;
-        context.commit('setUser', result);
+        const { data } = await axios.get(`${render}users/${id}`);
+        context.commit('setUser', data.result);
       } catch (e) {
         alert('Request Failed: Could not retrieve user!');
       }
     },
     async fetchProducts(context) {
       try {
-        const { results } = (await axios.get(`${render}products`)).data;
-        context.commit('setProducts', results);
+        const { data } = await axios.get(`${render}products`);
+        context.commit('setProducts', data.results);
       } catch (e) {
         alert('Request Failed: Could not retrieve products from the database.');
       }
     },
-    async fetchProduct({ context }) {
+    async registerNewUser(context, newUser) {
       try {
-        const { results } = await axios.get(`${render}product`).data;
-        context.commit('setProduct', results);
-      } catch (e) {
-        alert('Requested Failed: Could not fetch product.');
-      }
-    },
-    async registerNewUser({ context }) {
-      try {
-        const { results } = await axios.post(`${render}users`).data;
-        const { msg } = await results;
-        if (msg) {
-          context.commit.dispatch('fetchUsers');
-          context.commit('setUser', msg);
+        const response = await axios.post(`${render}users/register`, newUser);
+        const { data } = response.data;
+        if (data.msg) {
+          context.dispatch('fetchUsers');
+          context.commit('setUser', data.user);
         }
       } catch (e) {
         alert('Request Failed: Could not register user.');
       }
     },
-    async updateUser({ context }) {
+    async updateUser(context) {
       try {
-        const { results } = await axios.patch(`${render}users`.data);
-        if (results) {
-          context.commit.dispatch('fetchUsers');
-          context.commit('setUser', results);
+        const { data } = await axios.patch(`${render}users`, context.data);
+        if (data) {
+          context.commit('fetchUsers');
+          context.commit('setUser', data);
           alert('Update Successful');
         }
       } catch (e) {
@@ -89,12 +82,12 @@ export default createStore({
         );
       }
     },
-    async deleteUser({ context }) {
+    async deleteUser(context) {
       try {
-        const { results } = await axios.delete(`${render}users/`.data);
-        if (results) {
+        const { data } = await axios.delete(`${render}users/`);
+        if (data) {
           context.commit('fetchUsers');
-          context.commit('setUser', results);
+          context.commit('setUser', data);
           console.log('User deleted successfully');
         }
       } catch (e) {
@@ -102,26 +95,30 @@ export default createStore({
         alert('Request Failed: An error occurred while deleting user.');
       }
     },
-    addToCart({ commit }, product) {
-      commit('ADD_TO_CART', product);
+    addToCart(context, product) {
+      context.commit('ADD_TO_CART', product);
     },
-    async addProduct({ context }) {
+    async addProduct(context) {
       try {
-        const { results } = await axios.post(`${render}addProduct`.data);
-        if (results) {
-          context.commit.dispatch('fetchProducts');
-          context.commit('setProduct', results);
+        const response = await axios.post(`${render}addProduct`, context.data);
+        const { data } = response;
+        if (data) {
+          context.commit('fetchProducts');
+          context.commit('setProduct', data);
         }
       } catch (e) {
-        console.error(e);
+        console.error(e.message);
         alert('Request Failed: An error occurred while adding a new product.');
       }
     },
-    async updateProduct({ context }) {
+    async updateProduct(context) {
       try {
-        const { results } = await axios.patch(`${render}/updateProduct}`.data);
-        if (results) {
-          context.commit.dispatch('fetchProducts');
+        const { data } = await axios.patch(
+          `${render}/updateProduct}`,
+          context.data
+        );
+        if (data) {
+          context.commit('fetchProducts');
           alert('Successfully updated product!');
         } else {
           throw new Error('Failed to update product: ');
@@ -131,18 +128,17 @@ export default createStore({
         alert('An error occurred: ' + error);
       }
     },
-    async deleteProduct({ context }, BookID) {
+    async deleteProduct(context, BookID) {
       try {
-        const { results } = await axios.delete(`${render}product/${BookID}`);
-        if (results) {
-          context.commit.dispatch('fetchProducts');
-          context.commit('setProduct', results);
+        const { data } = await axios.delete(`${render}product/${BookID}`);
+        if (data) {
+          context.commit('fetchProducts');
+          context.commit('setProduct', data);
         }
       } catch (e) {
         alert('An error occurred while deleting the product');
       }
     },
   },
-
   modules: {},
 });

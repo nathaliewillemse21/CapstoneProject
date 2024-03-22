@@ -33,20 +33,18 @@ export default {
   padding: 10px;
   text-align: center;
 }
-.footer-icons{
-    display: flex;
+.footer-icons {
+  display: flex;
   justify-content: center;
 }
 
-.footer-icon {
+/* .footer-icon {
   margin: 0 10px;
-}
+} */
 
 @media (max-width: 768px) {
   .footer {
     padding: 20px;
   }
 }
-
-
 </style>

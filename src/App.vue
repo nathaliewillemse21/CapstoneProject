@@ -3,10 +3,6 @@
   <main class="container-fluid">
     <router-view/> 
   </main>
-  <div>
-    <router-link to="/login">Login</router-link>
-    <router-link to="/signup">Sign Up</router-link>
-  </div>
   <FooterView/>
 </template>
 

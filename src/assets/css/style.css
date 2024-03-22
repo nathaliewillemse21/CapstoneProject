@@ -5,9 +5,9 @@
   padding: 0;
   box-sizing: border-box;
 }
-.body-background {
+/* .body-background {
   background-color: rgb(232, 225, 225);
-}
+} */
 #view {
   margin: 5rem;
   padding: 2rem;
