@@ -1,50 +1,58 @@
 <template>
   <div>
-    <table>
-      <thead>
-        <tr>
-          <th>ID</th>
-          <th>Name</th>
-          <th>Quantity</th>
-          <th>Unit Price</th>
-          <th>Total Price</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(items, BookID) in groupedCheckoutData" :key="BookID">
-          <td>{{ BookID }}</td>
-          <td>{{ items[0].Title }}</td>
-          <td>{{ items.length }}</td>
-          <td>R{{ items[0].Price }}</td>
-          <td>R{{ calculateTotal(items) }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <h1>Checkout</h1>
+    <div v-if="cartData.length === 0">
+    </div>
+    <div v-else>
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Price</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr v-for="product in products" :key="product.BookID">
+            <td>{{ product.Title }}</td>
+            <td>{{ product.Price }}</td>
+            <td><button @click="processCheckout">Proceed to Checkout</button></td>
+          </tr>
+        </tbody>
+      </table>
+      
+    </div>
+    <div>
+      <CartComp :checkoutData="cartItems" @clear-cart="clearCart" />
+    </div>
   </div>
 </template>
 
 <script>
+
 export default {
+
   props: {
-    checkoutData: {
+    cartData: {
       type: Array,
       default: () => [],
     },
   },
-  computed: {
-    groupedCheckoutData() {
-      return this.checkoutData.reduce((acc, item) => {
-        if (!acc[item.BookID]) {
-          acc[item.BookID] = [];
-        }
-        acc[item.BookID].push(item);
-        return acc;
-      }, {});
-    },
-  },
   methods: {
-    calculateTotal(items) {
-      return items.reduce((total, item) => total + item.Price, 0);
+    async processCheckout() {
+      try {
+        const cart = new cart();
+        for (const products of Object.values(this.processCheckout)) {
+          await cart.addProduct(products[0]);
+          console.log('Checkout process initiated') 
+          this.$emit('clear-cart')
+        }
+        console.log('Checkout process initiated');
+        this.$emit('clear-cart');
+      } catch (error) {
+        console.error('Error processing checkout:', error);
+        alert('Failed to process checkout. Please try again later.');
+      }
     },
   },
 };

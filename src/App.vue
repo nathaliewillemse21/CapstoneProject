@@ -1,21 +1,27 @@
 <template>
-  <NavBarView/>
+  <NavBarView />
   <main class="container-fluid">
-    <router-view/> 
+    <LoadingSpinner v-if="isLoading" />
+    <router-view />
   </main>
-  <FooterView/>
+  <FooterView />
 </template>
 
 <script>
-
 import NavBarView from './components/NavbarView.vue';
 import FooterView from './components/FooterView.vue';
-
+import LoadingSpinner from '@/components/SpinnerView.vue';
 export default {
   components: {
     NavBarView,
-    FooterView
-  }
-}
+    FooterView, LoadingSpinner,
+  },
+
+  data() {
+    return {
+      isLoading: false,
+    };
+  },
+};
 </script>
 <style src="@/assets/css/style.css"></style>

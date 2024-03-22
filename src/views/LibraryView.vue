@@ -36,8 +36,8 @@
                 </p>
                 <p class="card-text">Price: R{{ product.Price }}</p>
                 <div class="actions">
-                  <AddToCart :product="product" />
-        </div>
+                  <button @click="addProductToCart(product)" class="btn btn-dark">Add to Cart</button>
+                </div>
               </div>
             </div>
           </div>
@@ -51,12 +51,7 @@
 </template>
 
 <script>
-import AddToCart from '@/components/ShoppingCart.vue';
-
 export default {
-  components: {
-    AddToCart
-  },
   data() {
     return {
       showModal: false,
@@ -120,12 +115,12 @@ export default {
     selectCategory(event) {
       this.selectedCategory = event.target.value;
     },
-    addToCart() {
-      this.$store.dispatch('addToCart', this.product)
+    addToCart(product) {
+      this.$store.dispatch('addToCart', product);
     },
     addProductToCart(product) {
       this.$store.dispatch('addToCart', product);
-      this.$store.dispatch('showNotification', 'Product added to cart');
+      alert('Product added successfully')
     },
     addProduct() {
       const formData = new FormData();
@@ -136,12 +131,12 @@ export default {
       }
       // Make an API call to add the product
       this.$axios
-        .post('/addProduct', formData)
+        .post('products/addProduct', formData)
         .then((response) => {
           console.log('Product added successfully:', response.data);
 
           this.$store.dispatch('fetchProducts');
-          this.showModal = false; // Close the modal after successful addition
+          this.showModal = false; 
         })
         .catch((error) => {
           console.error('Error adding product:', error);
@@ -181,7 +176,7 @@ export default {
 .actions {
   margin-top: 10px;
 }
-@media screen and (width > 500px) {
+@media screen and (width <= 500px) {
   .product-content {
     overflow-y: scroll;
     height: 10rem;

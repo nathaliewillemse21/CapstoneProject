@@ -5,18 +5,35 @@
   padding: 0;
   box-sizing: border-box;
 }
-/* .body-background {
-  background-color: rgb(232, 225, 225);
-} */
+
+
 #view {
-  margin: 5rem;
   padding: 2rem;
   display: flex;
 }
-@media screen and (width < 700px) {
+
+.image {
+  position: relative;
+  animation: moveLeftToRight;
+  animation-duration: 3s;
+  animation-iteration-count: 1;
+  animation-timing-function: moveLeftToRight infinite 3s ease-in;
+}
+
+@keyframes moveLeftToRight {
+  0% {
+    left: 0px;
+    top: 0px;
+  }
+  100% {
+    left: 100px; /* Ending position */
+    top: 0px; /* Ending position */
+  }
+}
+@media screen and (width >= 700px) {
   .about-content {
     overflow-y: scroll;
-    height: 40rem;
+    height: 30rem;
     scroll-snap-type: y mandatory;
   }
 }

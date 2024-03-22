@@ -7,7 +7,7 @@
         placeholder="Search products..."
       />
       <div>
-        <button @click="addProduct" class="addProduct">Add Product</button>
+        <button @click="showAddProductModal" class="btn btn-Secondary">Add Product</button>
       </div>
     </div>
 
@@ -28,21 +28,31 @@
             <td>R{{ product.Price }}</td>
             <td>
               <div class="actions m-2">
-                <button class="delete">Delete</button>
-                <button class="edit">Edit</button>
+                {{ product.name }} - {{ product.price }}
+                <button @click="editProduct(product.BookID)" class=" btn btn-danger">Edit</button>
+                <button @click="(event) => deleteProduct(product.BookID)" class="btn btn btn-dark">
+                  Delete
+                </button>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
-      <div v-if="showModal" class="modal">
-        <button @click="addProduct">Upload</button>
+       <div v-if="showModal" class="modal">
+        <form @submit.prevent="addProduct">
+          <input type="text" v-model="newProduct.Title" placeholder="Title">
+          <input type="text" v-model="newProduct.Tags" placeholder="Tags">
+          <input type="number" v-model="newProduct.Price" placeholder="Price">
+          <button type="submit">Add</button>
+        </form>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+import render from '@/store/index.js/';
+
 export default {
   data() {
     return {
@@ -54,6 +64,12 @@ export default {
       },
       searchQuery: '',
       selectedCategory: 'default',
+
+      newProduct: {
+        Title: '',
+        Tags: '',
+        Price: null
+      }
     };
   },
   computed: {
@@ -97,15 +113,13 @@ export default {
       });
     },
   },
+  props: ['product'],
   methods: {
-      editProduct() { },
-    deleteProduct(product) {
-      // Implement logic to confirm with the user if they want to delete the product
-      const confirmDelete = confirm(`Are you sure you want to delete ${product.Title}?`);
-      if (confirmDelete) {
-        // Make an API call to delete the product
-        // Handle the API response accordingly
-      }
+    editProduct(BookID) {
+      this.$router.push(`/products/update/${BookID}`);
+    },
+    deleteProduct(productID) {
+      this.$store.dispatch("deleteProduct", { id: productID })
     },
     showAddProductModal() {
       this.showModal = true;
@@ -126,26 +140,28 @@ export default {
           formData.append(category, this.file[category]);
         }
       }
-      console.log(formData); // Log the form data for debugging (optional)
 
-      // Make an API call to add the product
+      formData.append('Title', this.newProduct.Title);
+      formData.append('Tags', this.newProduct.Tags);
+      formData.append('Price', this.newProduct.Price);
+
       this.$axios
-        .post('/addProduct', formData)
+        .post(`${render}products/addProduct`, formData)
         .then((response) => {
           console.log('Product added successfully:', response.data);
-
           this.$store.dispatch('fetchProducts');
           this.showModal = false; // Close the modal after successful addition
         })
         .catch((error) => {
           console.error('Error adding product:', error);
+          alert('Failed to add product. Please try again later.');
         });
+    }
+  },
+    mounted() {
+      this.$store.dispatch('fetchProducts');
     },
-  },
-  mounted() {
-    this.$store.dispatch('fetchProducts');
-  },
-};
+  }
 </script>
 
 <style scoped>
@@ -174,6 +190,7 @@ td {
 th {
   background-color: grey;
 }
+
 .actions {
   margin-top: 10px;
 }
