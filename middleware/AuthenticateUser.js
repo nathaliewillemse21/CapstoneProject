@@ -6,7 +6,7 @@ const { sign, verify } = jwt;
 config();
 
 async function comparePasswords(userPassword, hashedPassword) {
-  return await bcrypt.compare(userPassword, hashedPassword);
+  return bcrypt.compare(userPassword, hashedPassword);
 }
 
 function createToken(user) {

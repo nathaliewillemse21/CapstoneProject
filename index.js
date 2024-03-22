@@ -22,7 +22,6 @@ app.use((req, res, next) => {
   res.header('Access-Control-Expose-Headers', 'Authorization');
   next();
 });
-
 // Middleware setup
 app.use(
   express.static('./static'),
